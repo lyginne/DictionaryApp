@@ -1,38 +1,38 @@
 #include <stdlib.h>
 #include "../include/linkedlist.h"
 
-void* GetElementByNumber(LinkedList list,int position){
+void* GetElementByNumber(LinkedList* list,int position){
 	int passed = 0;
-	LinkedListNode* node=LikedList->firstNode;
+	LinkedListNode* node=list->firstNode;
 	while(1){
 		if (passed==position){
 			return node;
 		}
-		if(node->node==null){
-			return null;
+		if(node->node==NULL){
+			return NULL;
 		}
 		node=node->node;
 		passed++;
 	}
 }
 
-int LinkedListAdd(LinkedList list,void* data,int position){
+int LinkedListAdd(LinkedList* list,void* data,int position){
 	//Add element to linked list
-	node* prevNode;
-	node* newNode;
+	LinkedListNode* prevNode;
+	LinkedListNode* newNode;
 
-	node* newNode = malloc(sizeof(linkedListNode));
-	if (newNode==null){
+	newNode = malloc(sizeof(LinkedListNode));
+	if (newNode==NULL){
 		return -1;
 	}
 	//if we add in first position we need to modify LinkedList structure
 	if(position==0){
-		newNode->node=list->fistNode;	
+		newNode->node=list->firstNode;	
 		list->firstNode=newNode;
 	}
 	else{
-		node* prevNode = getNodeByNumber(position-1);
-		if(prevNode==null){
+		prevNode = GetElementByNumber(list, position-1);
+		if(prevNode==NULL){
 			return -1;
 		}
 		newNode->node = prevNode->node;
@@ -42,12 +42,13 @@ int LinkedListAdd(LinkedList list,void* data,int position){
 	return 0;
 }
 
-int LinkedListRemove(LinkedList list,int position){
-	node* currentNode;
-	node* prevNode;
+int LinkedListRemove(LinkedList* list,int position){
+	LinkedListNode* currentNode;
+	LinkedListNode* prevNode;
 
-	prevNode=getNodeByNumber(position-1);
-	if(prevNode==null){
+	//Not yet implemented
+	//prevNode=getNodeByNumber(position-1);
+	if(prevNode==NULL){
 		return -1;
 	}
 	currentNode=prevNode->node;
