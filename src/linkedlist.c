@@ -1,58 +1,50 @@
 #include <stdlib.h>
+#include <stddef.h>
 #include "../include/linkedlist.h"
 
-void* GetElementByNumber(LinkedList* list,int position){
-	int passed = 0;
+void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,char* key)){
+        if(list->firstNode==NULL){
+                return NULL;
+        }
 	LinkedListNode* node=list->firstNode;
-	while(1){
-		if (passed==position){
+        while (node!=NULL) {
+		if(comparer(node->data,key)==0){
 			return node;
 		}
-		if(node->node==NULL){
-			return NULL;
-		}
 		node=node->node;
-		passed++;
-	}
+        }
+	return NULL;
 }
 
-int LinkedListAdd(LinkedList* list,void* data,int position){
+int LinkedListAdd(LinkedList* list,void* data){
 	//Add element to linked list
-	LinkedListNode* prevNode;
 	LinkedListNode* newNode;
 
 	newNode = malloc(sizeof(LinkedListNode));
 	if (newNode==NULL){
 		return -1;
 	}
-	//if we add in first position we need to modify LinkedList structure
-	if(position==0){
-		newNode->node=list->firstNode;	
-		list->firstNode=newNode;
-	}
-	else{
-		prevNode = GetElementByNumber(list, position-1);
-		if(prevNode==NULL){
-			return -1;
-		}
-		newNode->node = prevNode->node;
-		prevNode->node = newNode;
-	}
+	newNode->node=list->firstNode;	
+	list->firstNode=newNode;
 	newNode->data = data;
 	return 0;
 }
 
-int LinkedListRemove(LinkedList* list,int position){
-	LinkedListNode* currentNode;
+int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, char* key)){
+        if(list->firstNode==NULL){
+                return -1;
+        }
+	LinkedListNode* node=list->firstNode;
 	LinkedListNode* prevNode;
-
-	//Not yet implemented
-	//prevNode=getNodeByNumber(position-1);
-	if(prevNode==NULL){
-		return -1;
-	}
-	currentNode=prevNode->node;
-	prevNode->node=prevNode->node->node;
-	free(currentNode);
+        while (node!=NULL) {
+		if(comparer(node->data,key)==0){
+			if(prevNode!=NULL){
+				list->firstNode=node->node;
+			}	
+			free(node);
+		}
+		prevNode=node;
+		node=node->node;
+        }
 }
 
