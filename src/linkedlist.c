@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include "../include/linkedlist.h"
 
-void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,char* key)){
+void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,void* key)){
         if(list->firstNode==NULL){
                 return NULL;
         }
@@ -30,7 +30,7 @@ int LinkedListAdd(LinkedList* list,void* data){
 	return 0;
 }
 
-int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, char* key)){
+int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key)){
         if(list->firstNode==NULL){
                 return -1;
         }
