@@ -6,15 +6,15 @@
 #include "../include/linkedlist.h"
 
 
-char comparer(void* data, char* key){
+char comparer(void* data, void* key){
 	if(data=NULL){
 		return 0x80; //should define comparer error
 	}
-	return strcmp(((DictionaryNode*)data)->key,key);
+	return strcmp(((DictionaryNode*)data)->key,(char*)key);
 }
 
 DictionaryNode* dictionaryNodeSearch(Dictionary* dictionary,char* key){
-	return (DictionaryNode*)GetElement(dictionary->linkedList,key,&comparer);
+	return (DictionaryNode*)GetElement(dictionary->linkedList,(void*)key,&comparer);
 }
 
 int DictionaryAdd(Dictionary* dictionary,char* key, char* description){
@@ -29,6 +29,6 @@ DictionaryRemove(Dictionary* dictionary, char* key){
 }
 
 char* DictionaryDescriptionSearch(Dictionary* dictionary, char* key){
-	DictionaryNode* node = dictionaryNodeSearch(dictionary,key);	
+	DictionaryNode* node = dictionaryNodeSearch(dictionary,(void*)key);	
 }
 
