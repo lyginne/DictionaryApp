@@ -7,10 +7,9 @@ typedef struct LinkedListNode{
 
 typedef struct LinkedList{
 	LinkedListNode* firstNode;
-	int count;
 } LinkedList;
 
-void* GetElementByNumber(LinkedList* list,int position);
-int LinkedListAdd(LinkedList* list,void* data,int position);
-int LinkedListRemove(LinkedList* list,int position);
+void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,char* key));
+int LinkedListAdd(LinkedList* list,void* data);
+int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, char* key));
 #endif
