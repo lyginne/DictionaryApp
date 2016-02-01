@@ -1,7 +1,7 @@
 TARGET = dictionaryapp
 TARGETDIR = bin/
 CC = gcc
-CFLAGS = -std=c99 -Wall -I
+CFLAGS =-d -c -std=c99 -Wall -I
 SRCDIR=./src/
 OBJDIR=./obj
 SOURCES = $(wildcard $(SRCDIR)*.c)
@@ -12,3 +12,6 @@ $(TARGET) : $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) $(INCLUDE) -o $(TARGETDIR)/$@
 .c.o:
 	$(CC) $(SOURCES) $(CFLAGS) $< -o $@
+clean:
+	rm -rf $(TARGETDIR)/*;
+	rm -rf $(OBJDIR)/*
