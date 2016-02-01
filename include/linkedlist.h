@@ -12,4 +12,5 @@ typedef struct LinkedList{
 void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,void* key));
 int LinkedListAdd(LinkedList* list,void* data);
 int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key));
+LinkedList* LinkedListInitialize();
 #endif

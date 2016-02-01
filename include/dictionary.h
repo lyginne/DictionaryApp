@@ -10,4 +10,8 @@ typedef struct Dictionary{
 	LinkedList* linkedList;
 	int count;
 }Dictionary;
+int DictionaryAdd(Dictionary* dictionary,char* key, char* description);
+int DictionaryRemove(Dictionary* dictionary, char* key);
+char* DictionaryDescriptionSearch(Dictionary* dictionary, char* key);
+Dictionary* DictionaryInitialize();
 #endif

@@ -3,10 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../include/chatterbox.h"
+#include "../include/datamodel.h"
+
+
 #define STDOUT 1
 #define STDERR 2
 #define STDIN 0
 
+char addCallback(char* key, char* description){
+	printf("i wus here");
+	fflush(stdout);
+	Add(key,description);		
+}
+
+char removeCallback(char* key){
+	Remove(key);
+}
+
+char* searchCallback(char* key){
+	return Search(key);
+}
+	
 int main(int argc, char* argv[]){
 
 	char readbuffer[128];
@@ -22,33 +40,7 @@ int main(int argc, char* argv[]){
 		//type read from file code here
 	}
 	//that actualy the main cycle
-	while(1){
-		printf("%s",">");
-		fflush(stdout);
-		int charsread = read(0,readbuffer,128);
-		readbuffer[charsread]='\0';
-		if (strcmp(readbuffer,"add\n")==0){
-			printf("%s","Type a word:\r\n");
-			fflush(stdout);
-			read(STDIN,readbuffer,128);
-			//code for add
-		}
-		else if (strcmp(readbuffer,"search\n")==0){
-			printf("%s","Type a word:\r\n");
-			read(STDIN,readbuffer,128);
-			//code for search
-		}
-		else if (strcmp(readbuffer,"remove\n")==0){
-			printf("%s", "Type a word:\r\n");
-			read(STDIN,readbuffer,128);
-			//code for remove
-		}
-		else if (strcmp(readbuffer, "help\n")==0){
-			printf("%s\r\n%s\r\n%s\r\n%s\r\n", "add - add a word", "search - search a word", "remove - remove a word", "help - help");
-		}
-		else {
-			printf("%s\r\n","Invalid command, type help for help");
-			//code for invalid command
-		}
-	}
+	Initialize(NULL);
+	ListenerAddCallbacks(&addCallback, &removeCallback, &searchCallback);
+	listen();
 }
