@@ -16,6 +16,12 @@ $(TARGET) : $(OBJECTS)
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJECTS): | $(OBJDIR)
+$(TARGET): | $(TARGETDIR)
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+$(TARGETDIR):
+	mkdir -p $(TARGETDIR)
 clean:
 	rm $(OBJDIR)/*
 	rm $(TARGETDIR)/*
