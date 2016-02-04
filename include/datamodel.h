@@ -6,5 +6,7 @@ int Add(char* key, char* description);
 int Remove(char* key);
 char *Search(char* key);
 int Initialize(char* dataFile);
+char DataWriteToFile(char* dataFile);
+
 
 #endif

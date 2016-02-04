@@ -14,4 +14,7 @@ int DictionaryAdd(Dictionary* dictionary,char* key, char* description);
 int DictionaryRemove(Dictionary* dictionary, char* key);
 char* DictionaryDescriptionSearch(Dictionary* dictionary, char* key);
 Dictionary* DictionaryInitialize();
+char DictionaryForeachInit(Dictionary* dictionary);
+DictionaryNode* DictionaryNext(Dictionary* dictionary);
+
 #endif

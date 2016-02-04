@@ -1,17 +1,21 @@
-TARGET = dictionaryapp
-TARGETDIR = bin/
-CC = gcc
-CFLAGS =-d -c -std=c99 -Wall -I
-SRCDIR=./src/
-OBJDIR=./obj
-SOURCES = $(wildcard $(SRCDIR)*.c)
-INCLUDEDIR = ./include/
-INCLUDE=$(-I$(INCLUDEDIR))
-OBJECTS=$(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+TARGET	= dictionaryapp
+TARGETDIR = bin
+CC	= gcc
+LINKER	= gcc
+CFLAGS	= -std=c99 -Wall -g
+SRCDIR	= src
+OBJDIR	= obj
+#INCLUDEDIR = ./include/
+#INCLUDE=$(-I$(INCLUDEDIR))
+SOURCES := $(wildcard $(SRCDIR)/*.c)
+OBJECTS := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+
 $(TARGET) : $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) $(INCLUDE) -o $(TARGETDIR)/$@
-.c.o:
-	$(CC) $(SOURCES) $(CFLAGS) $< -o $@
+	echo $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $(TARGETDIR)/$@
+
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 clean:
-	rm -rf $(TARGETDIR)/*;
-	rm -rf $(OBJDIR)/*
+	rm $(OBJDIR)/*
+	rm $(TARGETDIR)/*

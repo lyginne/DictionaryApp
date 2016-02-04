@@ -14,7 +14,7 @@ void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,void* k
 	LinkedListNode* node=list->firstNode;
         while (node!=NULL) {
 		if(comparer(node->data,key)==0){
-			return node;
+			return node->data;
 		}
 		node=node->node;
         }
@@ -26,42 +26,18 @@ void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,void* k
  * mem-O(1)
  * dif-O(1)*/
 int LinkedListAdd(LinkedList* list,void* data){
-	printf("entered method");
-	fflush(stdout);
 	//Add element to linked list
 	LinkedListNode* newNode;
 	LinkedListNode* prevFirstNode;
 
 	newNode = (LinkedListNode*)malloc(sizeof(LinkedListNode));
-	printf("123");
-	fflush(stdout);
 	if (newNode==NULL){
 		return -1;
 	}
-	printf("321");
-	fflush(stdout);
-	if(list==NULL){
-		printf("linkedList is NULL");
-		fflush(stdout);
-	}
-	if(list->firstNode==NULL){
-		printf("firstNode is NULL");
-		fflush(stdout);
-	}
 	prevFirstNode=list->firstNode;	
-	printf("list is ok\n");
-
-	fflush(stdout);
-	
 	newNode->node=prevFirstNode;	
-	printf("ok");
-	fflush(stdout);
 	list->firstNode=newNode;
-	printf("ok2");
-	fflush(stdout);
 	newNode->data = data;
-	printf("ok3");
-	fflush(stdout);
 	return 0;
 }
 
@@ -69,7 +45,7 @@ int LinkedListAdd(LinkedList* list,void* data){
  * returns 0 if found and deleted and -1 if not found or error TODO: define the results and make another error notification
  * mem-O(1)
  * dif-O(n) - and that's bad again, see method GetElement and it's comments for details*/
-int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key)){
+int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key), char (*destruct)(void* data)){
         if(list->firstNode==NULL){
                 return -1;
         }
@@ -80,17 +56,29 @@ int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, vo
 			if(prevNode!=NULL){
 				list->firstNode=node->node;
 			}	
+			destruct(node->data);
 			free(node);
+			prevNode=node;
+			node=node->node;
 			return 0;
 		}
 		prevNode=node;
 		node=node->node;
         }
-	return -1;
+	return 0; //not found to remove is not actualy an ordinary stuff
 }
 
 LinkedList* LinkedListInitialize(){
-	printf("linkedList initialized");
-	fflush(stdout);
-	return (LinkedList*)malloc(sizeof(LinkedList));
+	LinkedList* linkedList = (LinkedList*)malloc(sizeof(LinkedList));
+	return linkedList;
+}
+void LinkedListForeachInit(LinkedList* list){
+	list->foreachNode = list->firstNode;
+}
+void* LinkedListNext(LinkedList* list){
+	if(list->foreachNode==NULL)
+		return NULL;
+	void* data = list->foreachNode->data;
+	list->foreachNode=list->foreachNode->node;
+	return data;		
 }

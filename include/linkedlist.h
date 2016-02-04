@@ -7,10 +7,13 @@ typedef struct LinkedListNode{
 
 typedef struct LinkedList{
 	LinkedListNode* firstNode;
+	LinkedListNode* foreachNode;
 } LinkedList;
 
 void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,void* key));
 int LinkedListAdd(LinkedList* list,void* data);
-int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key));
+int LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key), char (*destructor)(void* data));
 LinkedList* LinkedListInitialize();
+void LinkedListForeachInit(LinkedList* list);
+void* LinkedListNext(LinkedList* list);
 #endif
