@@ -8,6 +8,7 @@
 
 char destructor(void* data){
 	if (data==NULL){
+		perror("Dictionary destructor: Somehow node exist in list, but not conain data");
 		return -1;
 	}
 	free(((DictionaryNode*)data)->key);
@@ -16,9 +17,14 @@ char destructor(void* data){
 }
 char comparer(void* data, void* key){
 	if(data==NULL){
-		return 0x80; //should define comparer error
+		perror("Dictionary comparer: Somehow node exist in list, but not conain data");
+		return -1; //should define comparer error
 	}
-	return strcmp(((DictionaryNode*)data)->key,(char*)key);
+	int result = strcmp(((DictionaryNode*)data)->key,(char*)key);
+	if(result==0){
+		return 0;
+	}
+	return 1;
 }
 
 DictionaryNode* dictionaryNodeSearch(Dictionary* dictionary,char* key){
@@ -30,18 +36,32 @@ Dictionary* DictionaryInitialize(){
 	return dictionary;
 }
 
-int DictionaryAdd(Dictionary* dictionary,char* key, char* description){
+char DictionaryAdd(Dictionary* dictionary,const char* key, const char* description){
 	DictionaryNode* addingNode = (DictionaryNode*)malloc(sizeof(DictionaryNode));
+	if(addingNode==NULL){
+		perror("Can't allocate memory for DictionaryNode");
+		return -1;
+	}
 	char* cpKey=(char*)malloc(strlen(key)+1);
+	if(cpKey==NULL){
+		perror("Can't allocate memory for key in DictionaryNode");
+		return -1;
+	}
 	addingNode->key = strcpy(cpKey,key);
 	char* cpDescription=(char*)malloc(strlen(description)+1);
+	if(cpDescription==NULL){
+		perror("Can't allocate memory for description in DictionaryNode");
+		return -1;
+	}
 	addingNode->description = strcpy(cpDescription,description);
-	LinkedListAdd(dictionary->linkedList,addingNode);
+	if(LinkedListAdd(dictionary->linkedList,addingNode)!=0)
+		return -1;
 	return 0;
 }
 
-int DictionaryRemove(Dictionary* dictionary, char* key){
-	LinkedListRemove(dictionary->linkedList,key,&comparer, &destructor);
+char DictionaryRemove(Dictionary* dictionary, char* key){
+	if(LinkedListRemove(dictionary->linkedList,key,&comparer, &destructor)!=0)
+		return -1;
 	return 0;
 }
 
