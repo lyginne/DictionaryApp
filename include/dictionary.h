@@ -10,8 +10,8 @@ typedef struct Dictionary{
 	LinkedList* linkedList;
 	int count;
 }Dictionary;
-int DictionaryAdd(Dictionary* dictionary,char* key, char* description);
-int DictionaryRemove(Dictionary* dictionary, char* key);
+char DictionaryAdd(Dictionary* dictionary,const char* key,const char* description);
+char DictionaryRemove(Dictionary* dictionary, char* key);
 char* DictionaryDescriptionSearch(Dictionary* dictionary, char* key);
 Dictionary* DictionaryInitialize();
 char DictionaryForeachInit(Dictionary* dictionary);

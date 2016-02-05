@@ -1,11 +1,11 @@
 #ifndef H_DATAMODEL
 #define H_DATAMODEL
 
-int Initialize(char* dataFile);
-int Add(char* key, char* description);
-int Remove(char* key);
+char Initialize(char* dataFile);
+char Add(char* key, char* description);
+char Remove(char* key);
 char *Search(char* key);
-int Initialize(char* dataFile);
+char Initialize(char* dataFile);
 char DataWriteToFile(char* dataFile);
 
 
