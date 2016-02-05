@@ -62,8 +62,9 @@ char Initialize(char* path){
 	}
 	FILE* file=fopen(path,"r");
 	if(file==NULL){
-		perror("Can't open file.");
-		return -1;
+		//if file does not exist don't try to read, write only
+		errno=0;
+		return 0;
 	}
 	while (!feof(file)){
 		if(fgets(buf, BUFFSIZE, file)==NULL){
