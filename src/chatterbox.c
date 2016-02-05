@@ -8,6 +8,7 @@
 #include "../include/reader.h"
 #include "../include/chatterbox.h"
 #include "../include/customerrno.h"
+#include "../include/verificator.h"
 
 char (*AddCallback)(char* key, char* description);
 char (*RemoveCallback)(char* key);
@@ -40,22 +41,34 @@ char AddRecieved(){
 		fflush(stdout);
 		return -1;
 	}
+	if(validateString(key)==STRING_UNVALID){
+		perror("key is invalid");		
+		free(key);
+		return 1;
+	}
 	printf("%s", "Type a description: ");
 	fflush(stdout);
 	ssize=ReaderGetWholeDamnString(0,&description);
 	if(ssize==0){
 		perror("Unexpected EOF");
 		free(key);
-		key=NULL;
 		free(description);
-		description=NULL;
 		return -1;
 	}
-	AddCallback(key,description);
+	if(validateString(description)==STRING_UNVALID){
+		perror("description is invalid");		
+		free(key);
+		free(description);
+		return 1;
+			
+	}
+	if(AddCallback(key,description)!=0){
+		free(key);
+		free(description);
+		return -1;
+	}
 	free(key);
-	key=NULL;
 	free(description);
-	description=NULL;
 	return 0;
 }
 

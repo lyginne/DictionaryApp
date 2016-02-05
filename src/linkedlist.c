@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include "../include/linkedlist.h"
+#include "../include/customerrno.h"
 
 /*function 
  * returns the first element with key compared by comparer and NULL if error or not found
@@ -65,12 +66,15 @@ char LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, v
 				//if we're removing firstNode we should change list structure
 				list->firstNode=node->node;
 			}	
-			if(destruct(node->data)!=0)
+			else{
+				prevNode->node=node->node;
+			}
+			if(destruct(node->data)!=0){
+				//if we can't destruct node, return -1;
 				return -1;
+			}
 			free(node);
-			prevNode=node;
-			node=node->node;
-			return 1;
+			return 0;
 		}
 		else if(compresult==-1){
 			//Comparer signals an error;

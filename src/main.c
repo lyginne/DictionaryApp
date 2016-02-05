@@ -5,11 +5,14 @@
 
 #include "../include/chatterbox.h"
 #include "../include/datamodel.h"
+#include "../include/customerrno.h"
 
 
 #define STDOUT 1
 #define STDERR 2
 #define STDIN 0
+
+int customerrno=0;
 
 char addCallback(char* key, char* description){
 	return Add(key,description);		
@@ -36,13 +39,15 @@ int main(int argc, char* argv[]){
 	//exactly one argument, should be file to read and fill the dictionary
 	else if(argc==2){
 		path=argv[1];
-		//type read from file code here
 	}
-	Initialize(path);
+	if(Initialize(path)!=0){
+		exit(1);
+	}
 	ListenerAddCallbacks(&addCallback, &removeCallback, &searchCallback);
 	if(listen()==0){
-		DataWriteToFile(path);
-		exit(0);
+		if(DataWriteToFile(path)==0){
+			exit(0);
+		}
 	}
 	exit(1);
 

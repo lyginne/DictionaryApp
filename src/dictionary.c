@@ -4,11 +4,13 @@
 #include <string.h>
 #include "../include/dictionary.h"
 #include "../include/linkedlist.h"
+#include "../include/customerrno.h"
 
 
 char destructor(void* data){
 	if (data==NULL){
 		perror("Dictionary destructor: Somehow node exist in list, but not conain data");
+		customerrno=1;
 		return -1;
 	}
 	free(((DictionaryNode*)data)->key);
@@ -18,7 +20,8 @@ char destructor(void* data){
 char comparer(void* data, void* key){
 	if(data==NULL){
 		perror("Dictionary comparer: Somehow node exist in list, but not conain data");
-		return -1; //should define comparer error
+		customerrno=1;
+		return -1;
 	}
 	int result = strcmp(((DictionaryNode*)data)->key,(char*)key);
 	if(result==0){
@@ -27,15 +30,26 @@ char comparer(void* data, void* key){
 	return 1;
 }
 
+/*returns DictionaryNode, can fail, but will set customerrno*/
 DictionaryNode* dictionaryNodeSearch(Dictionary* dictionary,char* key){
 	return (DictionaryNode*)GetElement(dictionary->linkedList,(void*)key,&comparer);
 }
 Dictionary* DictionaryInitialize(){
 	Dictionary* dictionary=(Dictionary*)malloc(sizeof(dictionary));
+	if(dictionary==NULL){
+		perror("Can't allocate dictionary");
+		return NULL;
+	}
 	dictionary->linkedList=LinkedListInitialize();
+	if(dictionary->linkedList==NULL){
+		free(dictionary);
+		return NULL;
+	}
 	return dictionary;
 }
 
+/* return 0 if ok
+ * return -1 on error */
 char DictionaryAdd(Dictionary* dictionary,const char* key, const char* description){
 	DictionaryNode* addingNode = (DictionaryNode*)malloc(sizeof(DictionaryNode));
 	if(addingNode==NULL){

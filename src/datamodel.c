@@ -5,6 +5,7 @@
 #include "../include/datamodel.h"
 #include "../include/dictionary.h"
 #include "../include/verificator.h"
+#include "../include/customerrno.h"
 
 #define BUFFSIZE 2
 
@@ -20,12 +21,13 @@ char parseAndSave(char* line){
 		if(*strPointer=='\t'){
 			if(key!=NULL){
 				//tabulation is ok only once, so key should not be setted
-				perror("Invalid file");
+				perror("Invalid file structure");
 				return -1;
 			}
 			*strPointer='\0';	
 			key=line;
 			if(validateString(key)==STRING_UNVALID){
+				perror("Invalid file structure");
 				return -1;
 			}
 			descriptionStartPointer=strPointer+1;
@@ -33,12 +35,17 @@ char parseAndSave(char* line){
 		if(*strPointer=='\n'){
 			*strPointer='\0';
 			description=descriptionStartPointer;
-
+			if(validateString(description)==STRING_UNVALID){
+				perror("Invalid file structure");
+				return -1;
+			}
 		}
 		strPointer++;
 	}
-	if (key==NULL||description==NULL)
+	if (key==NULL||description==NULL){
+		perror("Invalid file structure");
 		return -1;
+	}
 	
 	if(DictionaryAdd(dictionary,key, description)!=0)
 		return -1;
@@ -85,7 +92,11 @@ char Initialize(char* path){
 			//if we read whole bytes we requested
 			if(buf[ssize-1]=='\n'){
 				//we got lion^W line, everybody get in a car
-				parseAndSave(line);
+				if(parseAndSave(line)!=0){
+					free(line);
+					fclose(file);
+					return -1;
+				}
 				free(line);
 				basicsize=BUFFSIZE;
 				line=NULL;
@@ -93,6 +104,11 @@ char Initialize(char* path){
 			continue; //if we did not met EOF or '\n' keep reading that same file
 		}
 		strcat(line,buf);
+		if(parseAndSave(line)!=0){
+			free(line);
+			fclose(file);
+			return -1;
+		}
 		parseAndSave(line);
 		free(line);
 		line=NULL;
