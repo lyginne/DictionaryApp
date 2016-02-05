@@ -62,6 +62,7 @@ char LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, v
 		char compresult = comparer(node->data,key);
 		if(compresult==0){
 			if(prevNode==NULL){
+				//if we're removing firstNode we should change list structure
 				list->firstNode=node->node;
 			}	
 			if(destruct(node->data)!=0)
