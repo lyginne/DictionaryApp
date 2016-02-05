@@ -91,11 +91,11 @@ LinkedList* LinkedListInitialize(){
 	}
 	return linkedList;
 }
-/* function prepares LinkedList struct to use LinkedListNext function*/
+/* function prepares LinkedList struct to use LinkedListNext function ca't fail if list is ok*/
 void LinkedListForeachInit(LinkedList* list){
 	list->foreachNode = list->firstNode;
 }
-/* function returns void* data each time to the next node*/
+/* function returns void* data each time to the next node can't fail if list is ok*/
 void* LinkedListNext(LinkedList* list){
 	if(list->foreachNode==NULL)
 		return NULL;
