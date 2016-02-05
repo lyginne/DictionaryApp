@@ -4,18 +4,11 @@
 #include <errno.h>
 #include "../include/datamodel.h"
 #include "../include/dictionary.h"
+#include "../include/verificator.h"
 
 #define BUFFSIZE 2
-#define STRING_UNVALID 0
-#define STRING_VALID -1
 
 static Dictionary* dictionary;
-char validateString(const char* key){
-	if(strlen(key)==0){
-		return STRING_UNVALID;
-	}
-	return STRING_VALID;
-}
 
 char parseAndSave(char* line){
 	char* strPointer;
