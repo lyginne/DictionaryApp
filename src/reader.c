@@ -24,6 +24,7 @@ char restoreflagsfd(int fd){
 		flags = fcntl(fd, F_GETFL, 0);
 		return -1;
 	}
+	errno=0;
 	return 0;
 }
 

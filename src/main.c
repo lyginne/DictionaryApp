@@ -12,13 +12,11 @@
 #define STDIN 0
 
 char addCallback(char* key, char* description){
-	Add(key,description);		
-	return 0;
+	return Add(key,description);		
 }
 
 char removeCallback(char* key){
-	Remove(key);
-	return 0;
+	return Remove(key);
 }
 
 char* searchCallback(char* key){
@@ -26,6 +24,7 @@ char* searchCallback(char* key){
 }
 	
 int main(int argc, char* argv[]){
+	char* path=NULL;
 
 	//more than one argument should be a user mistake
 
@@ -36,14 +35,15 @@ int main(int argc, char* argv[]){
 
 	//exactly one argument, should be file to read and fill the dictionary
 	else if(argc==2){
+		path=argv[1];
 		//type read from file code here
 	}
-	//that actualy the main cycle
-	Initialize(NULL);
+	Initialize(path);
 	ListenerAddCallbacks(&addCallback, &removeCallback, &searchCallback);
 	if(listen()==0){
-		if(argc==2)
-			DataWriteToFile(argv[1]);
+		DataWriteToFile(path);
+		exit(0);
 	}
+	exit(1);
 
 }
