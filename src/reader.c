@@ -14,7 +14,7 @@ char nonblockfd(int fd){
 	flags = fcntl(fd, F_GETFL, 0);
 	if(flags==-1&&errno!=0){
 		perror("Can't get flags value");
-		flags = fcntl(fd, F_GETFL, 0);
+		return -1;
 	}
 	if(fcntl(fd, F_SETFL, flags | O_NONBLOCK)<0&&errno!=0){
 		perror("Can't set stream nonblocking");
@@ -24,11 +24,11 @@ char nonblockfd(int fd){
 }
 
 char restoreflagsfd(int fd){
+	errno=0;
 	if(fcntl(fd,F_SETFL, flags)<0&&errno!=0){
 		perror("Can't restore stream flags");
 		return -1;
 	}
-	errno=0;
 	return 0;
 }
 
@@ -105,7 +105,3 @@ ssize_t ReaderGetWholeDamnString(int fd, char** lineptr){
 	while(1);
 }
 
-/*ssize_t ReaderGetWholeDamnString(int fd, char** lineptr){
-	key=NULL;
-	
-}*/
