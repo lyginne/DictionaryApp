@@ -22,7 +22,6 @@ char nonblockfd(int fd){
 char restoreflagsfd(int fd){
 	if(fcntl(fd,F_SETFL, flags)){
 		perror("Can't restore stream flags");
-		flags = fcntl(fd, F_GETFL, 0);
 		return -1;
 	}
 	errno=0;
