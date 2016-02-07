@@ -15,6 +15,7 @@ char destructor(void* data){
 	}
 	free(((DictionaryNode*)data)->key);
 	free(((DictionaryNode*)data)->description);
+	free(data);
 	return 0;
 }
 char comparer(void* data, void* key){
@@ -58,12 +59,15 @@ char DictionaryAdd(Dictionary* dictionary,const char* key, const char* descripti
 	}
 	char* cpKey=(char*)malloc(strlen(key)+1);
 	if(cpKey==NULL){
+		free(addingNode);
 		perror("Can't allocate memory for key in DictionaryNode");
 		return -1;
 	}
 	addingNode->key = strcpy(cpKey,key);
 	char* cpDescription=(char*)malloc(strlen(description)+1);
 	if(cpDescription==NULL){
+		free(addingNode);
+		free(cpKey);
 		perror("Can't allocate memory for description in DictionaryNode");
 		return -1;
 	}

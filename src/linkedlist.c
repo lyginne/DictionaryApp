@@ -48,9 +48,8 @@ char LinkedListAdd(LinkedList* list,void* data){
 }
 
 /*function deletes the first element with a key compared by comparer
- * returns 1 if found and deleted 
  * returns -1 if error
- * returns 0 if not found
+ * returns 0 if ok
  * mem-O(1)
  * dif-O(n) - and that's bad again, see method GetElement and it's comments for details*/
 char LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key), char (*destruct)(void* data)){
@@ -70,7 +69,8 @@ char LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, v
 				prevNode->node=node->node;
 			}
 			if(destruct(node->data)!=0){
-				//if we can't destruct node, return -1;
+				free(node);
+				//if we can't destruct node data, return -1;
 				return -1;
 			}
 			free(node);
@@ -93,6 +93,8 @@ LinkedList* LinkedListInitialize(){
 		perror("LinkedListInitialize: Can't alloc mem for new linked list");
 		return NULL;
 	}
+	linkedList->foreachNode=NULL;
+	linkedList->firstNode=NULL;
 	return linkedList;
 }
 /* function prepares LinkedList struct to use LinkedListNext function ca't fail if list is ok*/

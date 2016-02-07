@@ -36,7 +36,10 @@ char AddRecieved(){
 	printf("%s","Type a word: ");
 	fflush(stdout);
 	ssize=ReaderGetWholeDamnString(0,&key);
+	if(ssize<0)
+		return -1;
 	if(ssize==0){
+		free(key);
 		printf("%s\n", "Unexpected EOF");
 		fflush(stdout);
 		return -1;
@@ -49,6 +52,8 @@ char AddRecieved(){
 	printf("%s", "Type a description: ");
 	fflush(stdout);
 	ssize=ReaderGetWholeDamnString(0,&description);
+	if(ssize<0)
+		return -1;
 	if(ssize==0){
 		perror("Unexpected EOF");
 		free(key);
@@ -78,6 +83,9 @@ char removeRecieved(){
 	printf("%s","Type a word: ");
 	fflush(stdout);
 	ssize=ReaderGetWholeDamnString(0,&key);
+	if(ssize<0)
+		return -1;
+		
 	if(ssize==0){
 		printf("%s\n", "Unexpected EOF");
 		fflush(stdout);
@@ -97,11 +105,12 @@ char searchRecieved(){
 	printf("%s","Type a word: ");
 	fflush(stdout);
 	ssize=ReaderGetWholeDamnString(0,&key);
+	if(ssize<0)
+		return -1;
 	if(ssize==0){
 		printf("%s\n", "Unexpected EOF");
 		fflush(stdout);
 		free(key);
-		key=NULL;
 		return -1;
 	}
 	char* searchResult=SearchCallback(key);
@@ -144,20 +153,28 @@ char listen(){
 			return -1;
 		}
 		if (strcmp(line,"add")==0){
-			if(AddRecieved()!=0)
+			if(AddRecieved()!=0){
+				free(line);
 				return -1;
+			}
 		}
 		else if (strcmp(line,"search")==0){
-			if(searchRecieved()!=0)
+			if(searchRecieved()!=0){
+				free(line);
 				return -1;
+			}
 		}
 		else if (strcmp(line,"remove")==0){
-			if(removeRecieved()!=0)
+			if(removeRecieved()!=0){
+				free(line);
 				return -1;
+			}
 		}
 		else if (strcmp(line, "help")==0){
-			if(helpRecieved()!=0)
+			if(helpRecieved()!=0){
+				free(line);
 				return -1;
+			}
 		}
 		else if(strcmp(line, "quit")==0){
 			free(line);

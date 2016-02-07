@@ -95,7 +95,6 @@ ssize_t ReaderGetWholeDamnString(int fd, char** lineptr){
 				free(line);
 				return -1;
 			}
-			blockingAllowed=1;
 			return strlen(line);	
 		}
 	} 
@@ -104,5 +103,6 @@ ssize_t ReaderGetWholeDamnString(int fd, char** lineptr){
 }
 
 /*ssize_t ReaderGetWholeDamnString(int fd, char** lineptr){
+	key=NULL;
 	
 }*/
