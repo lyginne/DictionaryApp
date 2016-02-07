@@ -12,7 +12,11 @@
 static int flags;
 char nonblockfd(int fd){
 	flags = fcntl(fd, F_GETFL, 0);
-	if(fcntl(fd, F_SETFL, flags | O_NONBLOCK)){
+	if(flags==-1&&errno!=0){
+		perror("Can't get flags value");
+		flags = fcntl(fd, F_GETFL, 0);
+	}
+	if(fcntl(fd, F_SETFL, flags | O_NONBLOCK)<0&&errno!=0){
 		perror("Can't set stream nonblocking");
 		return -1;
 	}
@@ -20,7 +24,7 @@ char nonblockfd(int fd){
 }
 
 char restoreflagsfd(int fd){
-	if(fcntl(fd,F_SETFL, flags)){
+	if(fcntl(fd,F_SETFL, flags)<0&&errno!=0){
 		perror("Can't restore stream flags");
 		return -1;
 	}
