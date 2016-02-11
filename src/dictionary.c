@@ -89,7 +89,7 @@ DictionaryAddResult DictionaryAdd(Dictionary* dictionary,char* key, char* descri
 		return DICTIONARYADDRESULT_FAILED;
 	}
 	addingNode->description = strcpy(cpDescription,description);
-	if(LinkedListAdd(dictionary->linkedList,addingNode)!=0){
+	if(LinkedListAdd(dictionary->linkedList,addingNode)==LINKEDLISTADDRESULT_FAILED){
 		free(addingNode);
 		free(cpKey);
 		free(cpDescription);

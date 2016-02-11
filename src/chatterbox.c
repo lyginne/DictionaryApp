@@ -36,7 +36,7 @@ RecieveResult AddRecieved(){
 		return RECIEVERESULT_FAILED;
 	if(key==NULL)
 		return RECIEVERESULT_EOF;
-	if(validateString(key)==STRING_UNVALID){
+	if(validateString(key,128)==STRING_UNVALID){
 		perror("Key is invalid");		
 		free(key);
 		return RECIEVERESULT_SUCCED;
@@ -52,7 +52,7 @@ RecieveResult AddRecieved(){
 		free(key);
 		return RECIEVERESULT_EOF;
 	}
-	if(validateString(description)==STRING_UNVALID){
+	if(validateString(description,0)==STRING_UNVALID){
 		perror("description is invalid");		
 		fflush(stdout);
 		free(key);
@@ -87,6 +87,11 @@ char removeRecieved(){
 		return RECIEVERESULT_FAILED;
 	if(key==NULL)
 		return RECIEVERESULT_EOF;
+	if(validateString(key,128)==STRING_UNVALID){
+		perror("Key is invalid");		
+		free(key);
+		return RECIEVERESULT_SUCCED;
+	}
 	RemoveRequestCallbackResult removeCallbackResult = RemoveCallback(key);
 	free(key);
 	if(removeCallbackResult == REMOVEREQUESTCALLBACK_SUCCEED){
@@ -109,11 +114,15 @@ char searchRecieved(){
 	printf("%s\n","Type a word: ");
 	fflush(stdout);
 	result=ReaderReadLine(stdin,&key);
-	//ssize=ReaderGetWholeDamnString(0,&key);
 	if(result<0)
 		return RECIEVERESULT_FAILED;
 	if(key==NULL)
 		return RECIEVERESULT_EOF;
+	if(validateString(key,128)==STRING_UNVALID){
+		perror("Key is invalid");		
+		free(key);
+		return RECIEVERESULT_SUCCED;
+	}
 	char* description=NULL;
 	SearchRequestCallbackResult searchResult=SearchCallback(key,&description);
 	free(key);

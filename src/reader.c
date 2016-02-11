@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 
-#define BASIS 1
 #define BUFFSIZE 2
 
 void newLineTerminatedToNullTerminated(char* line){

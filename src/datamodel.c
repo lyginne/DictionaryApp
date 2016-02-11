@@ -25,12 +25,12 @@ char parseAndSave(char* line){
 			}
 			*strPointer='\0';	
 			key=line;
-			if(validateString(key)==STRING_UNVALID){
+			if(validateString(key, 128)==STRING_UNVALID){
 				perror("Invalid file structure");
 				return -1;
 			}
 			description=strPointer+1;
-			if(validateString(description)==STRING_UNVALID){
+			if(validateString(description, 0)==STRING_UNVALID){
 				perror("Invalid file structure");
 				return -1;
 			}

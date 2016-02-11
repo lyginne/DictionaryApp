@@ -6,11 +6,6 @@
 #include "../include/chatterbox.h"
 #include "../include/datamodel.h"
 
-
-#define STDOUT 1
-#define STDERR 2
-#define STDIN 0
-
 AddRequestCallbackResult addCallback( char* key,  char* description){
 	DataModelAddResult result = Add(key,description);
 	if(result==DATAMODELADDRESULT_SUCCEED)
