@@ -7,127 +7,129 @@
 
 #include "../include/reader.h"
 #include "../include/chatterbox.h"
-#include "../include/customerrno.h"
 #include "../include/verificator.h"
 
-char (*AddCallback)(char* key, char* description);
-char (*RemoveCallback)(char* key);
-char* (*SearchCallback)(char* key);
+AddRequestCallback AddCallback;
+RemoveRequestCallback RemoveCallback;
+SearchRequestCallback SearchCallback;
 
-/*long int getline(char** line, FILE* fd){
-	defaultSize=128;
-	*line=(char *)malloc(defaultSize);
+typedef enum{
+	RECIEVERESULT_EOF,
+	RECIEVERESULT_FAILED,
+	RECIEVERESULT_SUCCED
+} RecieveResult;
 
-	fgets(line, size, stdin);
-}*/
-
-
-
-char ListenerAddCallbacks(char (*addRequestCallback)(char* key, char* description), char (*removeRequestCallback)(char* key), char* (*searchRequestCallback)(char* key)){
+void ListenerAddCallbacks(AddRequestCallback addRequestCallback, RemoveRequestCallback removeRequestCallback, SearchRequestCallback searchRequestCallback){
 	AddCallback=addRequestCallback;
 	RemoveCallback=removeRequestCallback;
 	SearchCallback=searchRequestCallback;	
-	return 0;
 }
-char AddRecieved(){
+
+RecieveResult AddRecieved(){
 	char* key=NULL;
 	char* description=NULL;
-	char ssize;
-	printf("%s","Type a word: ");
+	char result;
+	printf("%s\n","Type a word: ");
 	fflush(stdout);
-	ssize=ReaderGetWholeDamnString(0,&key);
-	if(ssize<0)
-		return -1;
-	if(ssize==0){
-		free(key);
-		printf("%s\n", "Unexpected EOF");
-		fflush(stdout);
-		return -1;
-	}
+	result=ReaderReadLine(stdin,&key);
+	if(result<0)
+		return RECIEVERESULT_FAILED;
+	if(key==NULL)
+		return RECIEVERESULT_EOF;
 	if(validateString(key)==STRING_UNVALID){
-		perror("key is invalid");		
+		perror("Key is invalid");		
 		free(key);
-		return 1;
+		return RECIEVERESULT_SUCCED;
 	}
-	printf("%s", "Type a description: ");
+	printf("%s\n", "Type a description: ");
 	fflush(stdout);
-	ssize=ReaderGetWholeDamnString(0,&description);
-	if(ssize<0)
-		return -1;
-	if(ssize==0){
-		perror("Unexpected EOF");
+	result=ReaderReadLine(stdin,&description);
+	if(result<0){
 		free(key);
-		free(description);
-		return -1;
+		return RECIEVERESULT_FAILED;
+	}
+	if(description==NULL){
+		free(key);
+		return RECIEVERESULT_EOF;
 	}
 	if(validateString(description)==STRING_UNVALID){
 		perror("description is invalid");		
+		fflush(stdout);
 		free(key);
 		free(description);
-		return 1;
+		return RECIEVERESULT_SUCCED;
 			
 	}
-	if(AddCallback(key,description)!=0){
-		free(key);
-		free(description);
-		return -1;
-	}
+	AddRequestCallbackResult addCallbackResult = AddCallback(key, description);
 	free(key);
 	free(description);
-	return 0;
+	if(addCallbackResult==ADDREQUESTCALLBACK_FAILED){
+		return RECIEVERESULT_FAILED;
+	}
+	else if(addCallbackResult == ADDREQUESTCALLBACK_ALREADYEXIST){
+		printf("%s\n", "Such word already exist");
+		fflush(stdout);
+		return RECIEVERESULT_SUCCED;
+	}
+	else if(addCallbackResult == ADDREQUESTCALLBACK_SUCCEED){
+		return RECIEVERESULT_SUCCED;
+	}
+	return RECIEVERESULT_FAILED;
 }
 
 char removeRecieved(){
 	char* key=NULL;
-	char ssize;
-	printf("%s","Type a word: ");
+	char result;
+	printf("%s\n","Type a word: ");
 	fflush(stdout);
-	ssize=ReaderGetWholeDamnString(0,&key);
-	if(ssize<0)
-		return -1;
-		
-	if(ssize==0){
-		printf("%s\n", "Unexpected EOF");
-		fflush(stdout);
-		free(key);
-		key=NULL;
-		return -1;
-	}
-	RemoveCallback(key);
+	result=ReaderReadLine(stdin,&key);
+	if(result<0)
+		return RECIEVERESULT_FAILED;
+	if(key==NULL)
+		return RECIEVERESULT_EOF;
+	RemoveRequestCallbackResult removeCallbackResult = RemoveCallback(key);
 	free(key);
-	key=NULL;
-	return 0;	
+	if(removeCallbackResult == REMOVEREQUESTCALLBACK_SUCCEED){
+		return RECIEVERESULT_SUCCED;
+	}
+	else if (removeCallbackResult == REMOVEREQUESTCALLBACK_FAILED){
+		return RECIEVERESULT_FAILED;
+	}
+	else if (removeCallbackResult == REMOVEREQUESTCALLBACK_NOTFOUND){
+		printf("%s\n", "No such word exist");
+		fflush(stdout);
+		return RECIEVERESULT_SUCCED;
+	}
+	return RECIEVERESULT_FAILED;	
 }
 
 char searchRecieved(){
 	char* key=NULL;
-	char ssize;
-	printf("%s","Type a word: ");
+	char result;
+	printf("%s\n","Type a word: ");
 	fflush(stdout);
-	ssize=ReaderGetWholeDamnString(0,&key);
-	if(ssize<0)
-		return -1;
-	if(ssize==0){
-		printf("%s\n", "Unexpected EOF");
-		fflush(stdout);
-		free(key);
-		return -1;
-	}
-	char* searchResult=SearchCallback(key);
-	if(searchResult==NULL&&errno==0&&customerrno==0){
-		//If no errors ocured and and still we got null - means not found
-		printf("%s\n", "Not Found");
-	}
-	else if(searchResult==NULL){
-		return -1;
-	}
-	else{
-		printf("%s\n",searchResult);
-	}
-	fflush(stdout);
+	result=ReaderReadLine(stdin,&key);
+	//ssize=ReaderGetWholeDamnString(0,&key);
+	if(result<0)
+		return RECIEVERESULT_FAILED;
+	if(key==NULL)
+		return RECIEVERESULT_EOF;
+	char* description=NULL;
+	SearchRequestCallbackResult searchResult=SearchCallback(key,&description);
 	free(key);
-	key=NULL;
-	return 0;
+	if(searchResult==SEARCHREQUESTCALLBACK_SUCCEED){
+		printf("%s\n",description);
+		return RECIEVERESULT_SUCCED;
+	}
+	else if(searchResult==SEARCHREQUESTCALLBACK_FAILED){
+		return RECIEVERESULT_FAILED;
+	}
+	else if(searchResult == SEARCHREQUESTCALLBACK_NOTFOUND){
+		printf("%s\n", "Not Found");
+		fflush(stdout);
+		return RECIEVERESULT_SUCCED;
+	}
+	return RECIEVERESULT_FAILED;
 }
 
 char helpRecieved(){
@@ -137,54 +139,54 @@ char helpRecieved(){
 		"remove - remove a word", 
 		"help - help",
 		"quit - quit properly");
-	return 0;
+	fflush(stdout);
+	return RECIEVERESULT_SUCCED;
 }
 
 char listen(){
 	char* line = NULL;
-	char ssize;
+	char result;
+	RecieveResult recieveResult;
 	while(1){
+		recieveResult=RECIEVERESULT_SUCCED;
 		printf("%s",">");
 		fflush(stdout);
-		ssize=ReaderGetWholeDamnString(0,&line);
-		if(ssize==0){
-			printf("%s\n", "Unexpected EOF");
-			fflush(stdout);
+		result=ReaderReadLine(stdin,&line);
+		if(result<0){
 			return -1;
 		}
-		if (strcmp(line,"add")==0){
-			if(AddRecieved()!=0){
-				free(line);
-				return -1;
-			}
+		if (line==NULL){
+			return 0;
+		}
+		else if (strcmp(line,"add")==0){
+			recieveResult = AddRecieved();
 		}
 		else if (strcmp(line,"search")==0){
-			if(searchRecieved()!=0){
-				free(line);
-				return -1;
-			}
+			recieveResult = searchRecieved();
 		}
 		else if (strcmp(line,"remove")==0){
-			if(removeRecieved()!=0){
-				free(line);
-				return -1;
-			}
+			recieveResult = removeRecieved();
 		}
 		else if (strcmp(line, "help")==0){
-			if(helpRecieved()!=0){
-				free(line);
-				return -1;
-			}
+			recieveResult = helpRecieved();
 		}
 		else if(strcmp(line, "quit")==0){
 			free(line);
-			line=NULL;
 			return 0;
 		}
 		else{ 
 			printf("%s\r\n","Invalid command, type help for help");
 		}
+
+		fflush(stdout);
 		free(line);
 		line=NULL;
+
+		if(recieveResult==RECIEVERESULT_SUCCED)
+			continue;
+		else if(recieveResult==RECIEVERESULT_EOF)
+			return 0;
+		else if(recieveResult==RECIEVERESULT_FAILED)
+			return -1;
 	}
 }

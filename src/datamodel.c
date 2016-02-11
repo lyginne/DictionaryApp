@@ -2,18 +2,17 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include "../include/reader.h"
 #include "../include/datamodel.h"
 #include "../include/dictionary.h"
 #include "../include/verificator.h"
-#include "../include/customerrno.h"
 
 #define BUFFSIZE 2
 
 static Dictionary* dictionary;
 
 char parseAndSave(char* line){
-	char* strPointer;
-	char* descriptionStartPointer;
+	char* strPointer=NULL;
 	char* key=NULL;
 	char* description=NULL;
 	strPointer=line;
@@ -30,15 +29,12 @@ char parseAndSave(char* line){
 				perror("Invalid file structure");
 				return -1;
 			}
-			descriptionStartPointer=strPointer+1;
-		}
-		if(*strPointer=='\n'){
-			*strPointer='\0';
-			description=descriptionStartPointer;
+			description=strPointer+1;
 			if(validateString(description)==STRING_UNVALID){
 				perror("Invalid file structure");
 				return -1;
 			}
+			break;
 		}
 		strPointer++;
 	}
@@ -46,98 +42,84 @@ char parseAndSave(char* line){
 		perror("Invalid file structure");
 		return -1;
 	}
-	
-	if(DictionaryAdd(dictionary,key, description)!=0)
+	DictionaryAddResult result = DictionaryAdd(dictionary, key, description);	
+	if(result==DICTIONARYADDRESULT_FAILED){
 		return -1;
-	return 0;
-}
-char Initialize(char* path){
-	char buf[BUFFSIZE];
-	char* line=NULL;
-	size_t basicsize=BUFFSIZE;
-	dictionary = DictionaryInitialize();
-	if(path==NULL){
-		//if d
+	}
+	else if(result==DICTIONARYADDRESULT_ALREADYEXIST){
+		perror("Already existing dictionary node, skiping");
 		return 0;
 	}
+	else if(result==DICTIONARYADDRESULT_SUCCED){
+		return 0;
+	}
+	return -1;
+}
+char FillFromFile(char* path){
+	char* line=NULL;
 	FILE* file=fopen(path,"r");
 	if(file==NULL){
 		//if file does not exist don't try to read, write only
 		errno=0;
 		return 0;
 	}
-	while (!feof(file)){
-		if(fgets(buf, BUFFSIZE, file)==NULL){
-			//Noth more to read, but we can have line saved before, can we?
-			if(line==NULL)
-				break;
-			parseAndSave(line);
-			free(line);
-			line=NULL;
+	while(ReaderReadLine(file,&line)==0){
+		if (line==NULL)
 			break;
-		}
-		line=(char*) realloc(line,basicsize); //buffsize
-		if (line==NULL){
-			perror("Dictionary Initialize realloc line failed");
-			free(line);
-			fclose(file);
-			return 0;
-		}
-		if(basicsize==BUFFSIZE){
-			line[0]='\0';
-		}
-		basicsize+=BUFFSIZE;
-		size_t ssize = strlen(buf);//figure out the actual length we read
-		if (ssize==BUFFSIZE-1){
-			strcat(line, buf);
-			//if we read whole bytes we requested
-			if(buf[ssize-1]=='\n'){
-				//we got lion^W line, everybody get in a car
-				if(parseAndSave(line)!=0){
-					free(line);
-					fclose(file);
-					return -1;
-				}
-				free(line);
-				basicsize=BUFFSIZE;
-				line=NULL;
-			}
-			continue; //if we did not met EOF or '\n' keep reading that same file
-		}
-		strcat(line,buf);
 		if(parseAndSave(line)!=0){
 			free(line);
 			fclose(file);
 			return -1;
 		}
-		parseAndSave(line);
 		free(line);
 		line=NULL;
-		basicsize=BUFFSIZE;
-		// if we somehow read the other amount of chars
-		 
-	} 
-	if(errno!=0){
-		perror("Error while Reading file");
-		fclose(file);
-		return -1;
 	}
 	fclose(file);
 	return 0;
-}
-
-char Add(char* key, char* description){
-	return DictionaryAdd(dictionary,key, description);
-}
-
-char Remove(char* key){
-	return DictionaryRemove(dictionary, key);
-}
-
-char *Search(char* key){
-	return DictionaryDescriptionSearch(dictionary, key);
 	
 }
+
+char Initialize(void){
+	dictionary = DictionaryInitialize();
+	if(dictionary==NULL)
+		return -1;
+	return 0;
+}
+
+DataModelAddResult Add( char* key,  char* description){
+	DictionaryAddResult result = DictionaryAdd(dictionary, key, description);
+	if(result==DICTIONARYADDRESULT_SUCCED)
+		return DATAMODELADDRESULT_SUCCEED;
+	if(result==DICTIONARYADDRESULT_FAILED)
+		return DATAMODELADDRESULT_FAILED;
+	if(result==DICTIONARYADDRESULT_ALREADYEXIST)
+		return DATAMODELADDRESULT_ALREADYEXIST;
+	return DATAMODELREMOVERESULT_FAILED;
+}
+
+DataModelRemoveResult Remove( char* key){
+	DictionaryRemoveResult result = DictionaryRemove(dictionary, key);
+	if(result==DICTIONARYREMOVERESULT_SUCCED)
+		return DATAMODELREMOVERESULT_SUCCEED;
+	if(result==DICTIONARYREMOVERESULT_FAILED)
+		return DATAMODELREMOVERESULT_FAILED;
+	if(result==DICTIONARYREMOVERESULT_NOTFOUND)
+		return DATAMODELREMOVERESULT_NOTFOUND;
+	return DATAMODELREMOVERESULT_FAILED;
+}
+
+DataModelSearchResult Search( char* key, char** description){
+	*description=NULL;
+	DataModelSearchResult result = DictionaryDescriptionSearch(dictionary, key, description);
+	if(result==DICTIONARYSEARCHRESULT_SUCCED)
+		return DATAMODELSEARCHRESULT_SUCCEED;
+	if(result==DICTIONARYSEARCHRESULT_FAILED)
+		return DATAMODELSEARCHRESULT_FAILED;
+	if(result==DICTIONARYSEARCHRESULT_NOTFOUND)
+		return DATAMODELSEARCHRESULT_NOTFOUND;
+	return DATAMODELSEARCHRESULT_FAILED;
+}
+
 char DataWriteToFile(char* path){
 	if(path==NULL){
 		return 0;

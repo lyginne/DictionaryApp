@@ -10,9 +10,27 @@ typedef struct LinkedList{
 	LinkedListNode* foreachNode;
 } LinkedList;
 
-void* GetElement(LinkedList* list,char* key, char (*comparer)(void* data,void* key));
-char LinkedListAdd(LinkedList* list,void* data);
-char LinkedListRemove(LinkedList* list,char* key, char (*comparer)(void* data, void* key), char (*destructor)(void* data));
+typedef enum {
+	LINKEDLISTADDRESULT_SUCCEED,
+	LINKEDLISTADDRESULT_FAILED
+} LinkedListAddResult;
+
+typedef enum {
+	LINKEDLISTSEARCHRESULT_SUCCEED,
+	LINKEDLISTSEARCHRESULT_FAILED,
+	LINKEDLISTSEARCHRESULT_NOTFOUND
+} LinkedListSearchResult;
+
+typedef enum {
+	LINKEDLISTREMOVERESULT_SUCCEED,
+	LINKEDLISTREMOVERESULT_FAILED,
+	LINKEDLISTREMOVERESULT_NOTFOUND
+} LinkedListRemoveResult;
+	
+
+LinkedListSearchResult LinkedListSearch(LinkedList* list, void** data, void* key, char (*comparer)(void* data,void* key));
+LinkedListAddResult LinkedListAdd(LinkedList* list, void* data);
+LinkedListRemoveResult LinkedListRemove(LinkedList* list, void* key, char (*comparer)(void* data,void* key), char (*destructor)(void* data));
 LinkedList* LinkedListInitialize();
 void LinkedListForeachInit(LinkedList* list);
 void* LinkedListNext(LinkedList* list);

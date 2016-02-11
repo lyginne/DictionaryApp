@@ -5,50 +5,70 @@
 
 #include "../include/chatterbox.h"
 #include "../include/datamodel.h"
-#include "../include/customerrno.h"
 
 
 #define STDOUT 1
 #define STDERR 2
 #define STDIN 0
 
-int customerrno=0;
-
-char addCallback(char* key, char* description){
-	return Add(key,description);		
+AddRequestCallbackResult addCallback( char* key,  char* description){
+	DataModelAddResult result = Add(key,description);
+	if(result==DATAMODELADDRESULT_SUCCEED)
+		return ADDREQUESTCALLBACK_SUCCEED;
+	if(result==DATAMODELADDRESULT_FAILED)
+		return ADDREQUESTCALLBACK_FAILED;
+	if(result==DATAMODELADDRESULT_ALREADYEXIST)
+		return ADDREQUESTCALLBACK_ALREADYEXIST;
+	return ADDREQUESTCALLBACK_FAILED;
 }
 
-char removeCallback(char* key){
-	return Remove(key);
+RemoveRequestCallbackResult removeCallback( char* key){
+	DataModelRemoveResult result = Remove(key);
+	if(result == DATAMODELREMOVERESULT_SUCCEED)
+		return REMOVEREQUESTCALLBACK_SUCCEED;
+	if(result == DATAMODELREMOVERESULT_FAILED)
+		return REMOVEREQUESTCALLBACK_FAILED;
+	if(result == DATAMODELREMOVERESULT_NOTFOUND)
+		return REMOVEREQUESTCALLBACK_NOTFOUND;
+	return REMOVEREQUESTCALLBACK_FAILED;
 }
 
-char* searchCallback(char* key){
-	return Search(key);
+SearchRequestCallbackResult searchCallback( char* key, char** description){
+	DataModelSearchResult result = Search(key, description);
+	if(result == DATAMODELSEARCHRESULT_SUCCEED)
+		return SEARCHREQUESTCALLBACK_SUCCEED;
+	if(result == DATAMODELSEARCHRESULT_FAILED)
+		return SEARCHREQUESTCALLBACK_FAILED;
+	if(result == DATAMODELSEARCHRESULT_NOTFOUND)
+		return SEARCHREQUESTCALLBACK_NOTFOUND;
+	return SEARCHREQUESTCALLBACK_FAILED;
 }
 	
 int main(int argc, char* argv[]){
 	char* path=NULL;
-
-	//more than one argument should be a user mistake
-
 	if(argc>2){
-		printf("%s","Too much arguments");
-		exit(1);	
+		printf("%s\n","Too much arguments");
+		exit(EXIT_FAILURE);	
 	}
 
-	//exactly one argument, should be file to read and fill the dictionary
-	else if(argc==2){
+	if(Initialize()!=0)
+		exit(EXIT_FAILURE);
+
+	if(argc==2){
 		path=argv[1];
+		if(FillFromFile(path)!=0)
+			exit(EXIT_FAILURE);
 	}
-	if(Initialize(path)!=0){
-		exit(1);
-	}
+
 	ListenerAddCallbacks(&addCallback, &removeCallback, &searchCallback);
 	if(listen()==0){
-		if(DataWriteToFile(path)==0){
-			exit(0);
+		if(argc==2){
+			if(DataWriteToFile(path)==0){
+				exit(EXIT_SUCCESS);
+			}
 		}
+		exit(EXIT_SUCCESS);
 	}
-	exit(1);
+	exit(EXIT_FAILURE);
 
 }
