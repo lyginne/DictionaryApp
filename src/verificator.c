@@ -1,5 +1,7 @@
 #include <string.h>
+
 #include "../include/verificator.h"
+
 char validateString(const char* key, size_t ssize){
 	if(strlen(key)==0)
 		return STRING_UNVALID;
