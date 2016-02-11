@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 
-#define BUFFSIZE 2
+#define BUFFSIZE 128
 
 void newLineTerminatedToNullTerminated(char* line){
 	while (*line!='\0'){
