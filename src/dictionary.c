@@ -34,7 +34,7 @@ char comparer(void* data, void* key){
 DictionarySearchResult dictionaryNodeSearch(Dictionary* dictionary, char* key, DictionaryNode** returnNode){
 	*returnNode = NULL;
 	DictionaryNode* node = NULL;
-	DictionarySearchResult result = LinkedListSearch(dictionary->linkedList, (void**) &node, (void*)key, &comparer);
+	LinkedListSearchResult result = LinkedListSearch(dictionary->linkedList, (void**) &node, (void*)key, &comparer);
 	if ( result==LINKEDLISTSEARCHRESULT_FAILED)
 		return DICTIONARYSEARCHRESULT_FAILED;
 	if ( result==LINKEDLISTSEARCHRESULT_NOTFOUND)

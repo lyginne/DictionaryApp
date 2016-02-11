@@ -111,7 +111,7 @@ DataModelRemoveResult Remove( char* key){
 
 DataModelSearchResult Search( char* key, char** description){
 	*description=NULL;
-	DataModelSearchResult result = DictionaryDescriptionSearch(dictionary, key, description);
+	DictionarySearchResult result = DictionaryDescriptionSearch(dictionary, key, description);
 	if(result==DICTIONARYSEARCHRESULT_SUCCED)
 		return DATAMODELSEARCHRESULT_SUCCEED;
 	if(result==DICTIONARYSEARCHRESULT_FAILED)
