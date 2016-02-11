@@ -64,6 +64,10 @@ int main(int argc, char* argv[]){
 		}
 		exit(EXIT_SUCCESS);
 	}
+	//Idk if that's a good idea to write data to file while listen() failed, but if you need this, uncomment the following
+	/*if(argc==2)
+		DataWriteToFile(path);
+	*/
 	exit(EXIT_FAILURE);
 
 }

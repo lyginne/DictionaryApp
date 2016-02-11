@@ -7,7 +7,7 @@
 #include "../include/dictionary.h"
 #include "../include/verificator.h"
 
-#define BUFFSIZE 2
+#define BUFFSIZE 128
 
 static Dictionary* dictionary;
 
