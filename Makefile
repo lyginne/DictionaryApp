@@ -2,7 +2,7 @@ TARGET	= dictionaryapp
 TARGETDIR = bin
 CC	= gcc
 LINKER	= gcc
-CFLAGS	= -std=c99 -Wall -g
+CFLAGS	= -std=c99 -Wall
 SRCDIR	= src
 OBJDIR	= obj
 #INCLUDEDIR = ./include/
